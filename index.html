@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#1f3a2c">
+<meta name="description" content="顧問が見てる — 部活のランニング中、顧問に怒られないようにサボるゲーム。">
+<title>顧問が見てる</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--app-->
+<div id="app">
+  <canvas id="cv"></canvas>
+
+  <div id="hud" hidden>
+    <div class="hud-top">
+      <span class="when"><b id="hMonth"></b><span id="hTitle"></span></span>
+      <span class="clock">残り <b id="hTime">1:10</b></span>
+      <span class="score"><b id="hPts">0</b><small>サボりpt</small></span>
+      <button id="pauseBtn" type="button" aria-label="一時停止">Ⅱ</button>
+    </div>
+    <div class="meters">
+      <div class="meter stamina"><label>スタミナ</label><div class="bar"><i id="mStamina"></i></div></div>
+      <div class="meter anger"><label>顧問の怒り <span id="mStrikes" aria-label="注意された回数"></span></label><div class="bar"><i id="mAnger"></i></div></div>
+      <div class="meter quota"><label>ノルマ <span id="mLaps"></span></label><div class="bar"><i id="mQuota"></i></div></div>
+    </div>
+  </div>
+
+  <div id="controls" hidden>
+    <p id="state" class="state"></p>
+    <div class="btns">
+      <button id="slackBtn" type="button"><b>もっとサボる</b><small>止まる→座る→寝る</small></button>
+      <button id="runBtn" type="button"><b>走る</b><small>押している間</small></button>
+    </div>
+    <p class="keys">Space 長押し：走る　／　S または ↓：もっとサボる　／　Esc：一時停止</p>
+  </div>
+
+  <section id="title" class="screen side">
+    <div class="note-page">
+      <p class="club">陸上部 部活日誌</p>
+      <h1>顧問が<br>見てる</h1>
+      <p class="lead">外周ランニング。走るふりをしながら、バレずにどれだけサボれるか。</p>
+      <div class="cta">
+        <button id="continueBtn" type="button" class="go" hidden></button>
+        <button id="startBtn" type="button" class="go">4月から入部する</button>
+      </div>
+      <h2>あそびかた</h2>
+      <ul class="rules">
+        <li><b>走る</b>を押している間だけ走る。離すと歩く。</li>
+        <li><b>もっとサボる</b>を押すたびに、立ち止まる → 座る → 寝転ぶ。深くサボるほど点が入るが、走り出すまで時間がかかる。</li>
+        <li>黄色い扇形が顧問の視界。<b>物陰には届かない</b>。視界の中でサボると怒りがたまり、いっぱいになると怒られる。3回で終了。</li>
+        <li>走り続けるとスタミナが切れてバテる。サボりは必要。</li>
+        <li>練習が終わるまでにノルマの周回を走り切ること。</li>
+      </ul>
+      <table class="levels">
+        <thead><tr><th>サボり方</th><th>点／秒</th><th>走り出すまで</th></tr></thead>
+        <tbody id="levelRows"></tbody>
+      </table>
+      <h2>ランキング <small>この端末の上位10件</small></h2>
+      <label class="namefield" for="nameInput">名前<input id="nameInput" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="名無し部員"></label>
+      <ol id="ranks"></ol>
+      <p id="rankEmpty" class="small">まだ記録がありません。</p>
+      <p class="foot"><button id="soundBtn" type="button" class="plain"></button></p>
+    </div>
+  </section>
+
+  <section id="intro" class="screen center" hidden>
+    <div class="note-page card">
+      <p class="club" id="iWhen"></p>
+      <h2 class="big" id="iTitle"></h2>
+      <p id="iNote"></p>
+      <dl class="facts">
+        <div><dt>練習時間</dt><dd id="iLen"></dd></div>
+        <div><dt>ノルマ</dt><dd id="iQuota"></dd></div>
+        <div><dt>これまでの得点</dt><dd id="iTotal"></dd></div>
+      </dl>
+      <button id="goBtn" type="button" class="go">練習開始</button>
+    </div>
+  </section>
+
+  <section id="pause" class="screen center" hidden>
+    <div class="note-page card">
+      <h2 class="big">一時停止</h2>
+      <p class="small">この練習の途中経過は保存されません。前の月までの結果は保存されています。</p>
+      <button id="resumeBtn" type="button" class="go">練習に戻る</button>
+      <button id="quitBtn" type="button" class="plain">タイトルへ（この練習はやり直し）</button>
+    </div>
+  </section>
+
+  <section id="result" class="screen center" hidden>
+    <div class="note-page card">
+      <p class="club" id="rWhen"></p>
+      <h2 class="big" id="rHead"></h2>
+      <dl class="log" id="rLog"></dl>
+      <p class="stamp" id="rComment"></p>
+      <button id="nextBtn" type="button" class="go"></button>
+    </div>
+  </section>
+
+  <section id="final" class="screen center" hidden>
+    <div class="note-page card wide">
+      <p class="club">一年間の部活日誌</p>
+      <h2 class="big" id="fTitle"></h2>
+      <p class="fscore"><b id="fScore"></b><span>サボりpt</span></p>
+      <p id="fPlace" class="place" hidden></p>
+      <table class="levels">
+        <thead><tr><th>練習</th><th>走った</th><th>サボった</th><th>怒られた</th><th>得点</th></tr></thead>
+        <tbody id="fRows"></tbody>
+      </table>
+      <div class="cta">
+        <button id="againBtn" type="button" class="go">もう一年</button>
+        <button id="homeBtn" type="button" class="plain">タイトルへ</button>
+      </div>
+    </div>
+  </section>
+</div>
+<!--/app-->
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

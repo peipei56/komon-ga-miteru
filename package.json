@@ -1,0 +1,8 @@
+{
+  "name": "komon-ga-miteru",
+  "version": "1.0.0",
+  "description": "顧問が見てる — slack off during club running without the coach noticing. A browser game with real line-of-sight.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": { "test": "node --test", "start": "python3 -m http.server 8080" }
+}
